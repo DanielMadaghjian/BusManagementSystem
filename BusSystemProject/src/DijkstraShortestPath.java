@@ -25,9 +25,65 @@ public class DijkstraShortestPath {
 		findShortestPaths(stopFrom, stopTo);		
 	}
 	
-    public void findShortestPaths(int src, int dest)
-    {
-    	
-    }
-   
+	public void findShortestPaths(int src, int dest)
+	{
+	    dist = new double[data.V];
+	    visited = new boolean[data.V];
+	    prev = new int[data.V];
+	    prev[data.getStopIndex(src)] = -1;
+	    for (int i = 0; i < dist.length; i++) {
+	        dist[i] = Double.POSITIVE_INFINITY;
+	        visited[i] = false;
+	    }
+	    dist[data.getStopIndex(src)] = 0;
+	    for (int i = 0; i < data.V - 1; i++) 
+	    {
+		    int vertex = minimumDistance(dist, visited);
+		    if (vertex >= 0)
+		    {
+			    visited[vertex] = true;
+			    for (DirectedEdge edge : data.edges.get(vertex))
+			    {
+			           int srcVert = data.getStopIndex(edge.src);
+			           int destVert = data.getStopIndex(edge.dest);
+			           double relaxDist = dist[srcVert] + edge.cost;
+			           if (dist[destVert] > relaxDist) 
+			           {
+			                dist[destVert] = dist[destVert] + edge.cost;
+			                prev[destVert] = srcVert;
+			           }
+			    }
+		    }
+	    }          
+	    shortestRoute = findShortestRoute(prev, data.getStopIndex(dest));
+	}
+
+	    
+	 // Referenced from www.geeksforgeeks.org
+	public int minimumDistance(double[] distTo, boolean[] visited) {
+	    double min = Double.MAX_VALUE;
+	    int index = -1;
+	    for (int i = 0; i < visited.length; i++) {
+	        if (!visited[i] && distTo[i] <= min) {
+	            min = distTo[i];
+	            index = i;
+	        }
+	    }
+	    return index;
+	}
+	      
+	    //referenced from techiedelight.com
+	public ArrayList<Stop> findShortestRoute(int[] prev, int lastStop)
+	{   	
+	    if(prev[lastStop] >= 0)
+	    {
+	    	findShortestRoute(prev, prev[lastStop]);
+	        shortestRoute.add(data.stops.get(lastStop));         
+	    }
+	    else
+	    {
+	    	shortestRoute.add(data.stops.get(lastStop));
+	    }
+	    return shortestRoute;
+	}	
 }
