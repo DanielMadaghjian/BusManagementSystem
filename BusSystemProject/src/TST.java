@@ -21,14 +21,6 @@ public class TST {
     		put(stop.stopName, stop);    		
     	}
     }
-    
-    /**
-     * Returns the number of key-value pairs in this symbol table.
-     * @return the number of key-value pairs in this symbol table
-     */
-    public int size() {
-        return n;
-    }
 
     /**
      * Does this symbol table contain the given key?
