@@ -49,7 +49,7 @@ public class DijkstraShortestPath {
 			           double relaxDist = dist[srcVert] + edge.cost;
 			           if (dist[destVert] > relaxDist) 
 			           {
-			                dist[destVert] = dist[destVert] + edge.cost;
+			                dist[destVert] = relaxDist;
 			                prev[destVert] = srcVert;
 			           }
 			    }

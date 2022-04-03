@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,6 +12,7 @@ public class SystemData {
 	private String stopTimesFile;
 	
 	public ArrayList<Stop> stops;
+	public ArrayList<Stop> stopsTST;
 	public ArrayList<ArrayList<DirectedEdge>> edges;
 	
 	public SystemData(String filename1, String filename2, String filename3)
@@ -21,7 +21,9 @@ public class SystemData {
 		this.transfersFile = filename2;
 		this.stopTimesFile = filename3;
 		stops = new ArrayList<Stop>();
+		stopsTST = new ArrayList<Stop>();
 		initialiseStops();
+		initialiseStopsTST();
 		V = stops.size();
 		edges = new ArrayList<>(stops.size());
 		for (int i = 0; i < stops.size(); i++) {
@@ -51,6 +53,37 @@ public class SystemData {
 					i++;
 					line = br.readLine();
 				}
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+	
+	public void initialiseStopsTST()
+	{
+		BufferedReader br;
+		
+		try {
+			br = new BufferedReader(new FileReader(stopsFile));
+			try {
+				String line = br.readLine();
+				line = br.readLine();	
+				int stopId;				
+				String stopName;	
+				String stopDesc;
+				while(line!= null)
+				{
+					stopId = Integer.parseInt(line.split(",")[0]);					
+					stopName = line.split(",")[2];
+					stopDesc = line.split(",")[3];
+					stopsTST.add(new Stop(stopId, stopName, stopDesc));					
+					line = br.readLine();
+				}	
 				br.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
