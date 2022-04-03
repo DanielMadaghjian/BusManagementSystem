@@ -3,6 +3,8 @@ import java.util.Scanner;
 
 public class BusSystem {
 	public static SystemData data;
+	public static DijkstraShortestPath shortestPath;
+	public static TST tree;
 	
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);	
@@ -13,7 +15,7 @@ public class BusSystem {
 		do
 		{
 			System.out.println("Please choose an option to proceed or type 'exit' to leave: ");
-			System.out.println("1. Find Shortest Route\n2. Search for bus stop(s)\n3. Search for trip(s) by arrival time");
+			System.out.println("1. Find Shortest Route\n2. Search for bus stop\n3. Search for trip(s) by arrival time");
 			//Check choice
 			if(input.hasNextInt())
 			{
@@ -90,6 +92,28 @@ public class BusSystem {
 								}
 							}
 							break;
+						case 2:
+							
+							boolean correctStopName = false;
+							do
+							{
+								System.out.println("Please enter the bus stop name, or by the first few characters: ");
+
+									String stopName = input.next();	
+									tree = new TST(data);
+									Iterable<String> listOfStops = tree.keysWithPrefix(stopName.toUpperCase());
+									findStopsUsingTST(data, tree, listOfStops);
+									
+									if(tree.checkIfValidStop(listOfStops))
+									{
+										correctStopName = true;
+									}
+									else
+									{
+										System.out.println("No stops found.");
+									}
+						    } while(!correctStopName);
+							break;
 						default:								
 					}					
 				}
@@ -103,13 +127,12 @@ public class BusSystem {
 				System.out.println("Invalid option");
 			}			
 		} while(!finished);		
-		System.out.println("Thank you for using this service!");
-		
+		System.out.println("Thank you for using this service!");		
 	}
 	
 	public static void findShortestPath(SystemData data, int stopFrom, int stopTo)
 	{		
-		DijkstraShortestPath shortestPath = new DijkstraShortestPath(data, stopFrom, stopTo);
+		shortestPath = new DijkstraShortestPath(data, stopFrom, stopTo);
 		ArrayList<Stop> route = shortestPath.shortestRoute;
 		
 		Stop firstStop;
@@ -136,5 +159,17 @@ public class BusSystem {
             totalCost += cost;            
         }
         System.out.println("The total cost of this trip is: " + totalCost + "\n");			
+	}
+	
+	public static void findStopsUsingTST(SystemData data, TST tree, Iterable<String> listOfStops)
+	{
+		if(tree.checkIfValidStop(listOfStops))
+		{
+			for(String key: listOfStops)
+			{
+				Stop stop = tree.get(key);
+				System.out.println(stop.stopName + " ~ " + stop.stopId + " ~ " + stop.stopDesc + "\n");
+			}			
+		}						
 	}
 }
