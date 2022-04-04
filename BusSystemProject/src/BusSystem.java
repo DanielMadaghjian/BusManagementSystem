@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+
 
 public class BusSystem {
 	public static SystemData data;
@@ -48,25 +50,8 @@ public class BusSystem {
 												int stopTo = input.nextInt();
 												if(data.getStopIndex(stopTo) != -1)
 												{
-													correctToId = true;
-													//check if valid route
-													boolean match = false;
-													for(DirectedEdge edge: data.edges.get(data.getStopIndex(stopFrom)))
-													{
-														if(edge.dest == stopTo)
-														{
-															match = true;
-														}
-													}
-													if(match)
-													{
-														findShortestPath(data, stopFrom, stopTo);
-													}
-													else
-													{
-														System.out.println("Invalid route\n");
-													}
-													
+													correctToId = true;													
+													findShortestPath(data, stopFrom, stopTo);																							
 												}
 												else
 												{
@@ -214,6 +199,7 @@ public class BusSystem {
 		}
 		if(!matchingTrips.isEmpty())
 		{
+			matchingTrips = sortTripsById(matchingTrips);
 			for(Trip trip: matchingTrips)
 			{
 				System.out.println(trip.arrivalTime + " ~ " + trip.tripId + " ~ " + trip.stopName + "\n" );
@@ -225,5 +211,23 @@ public class BusSystem {
 			System.out.println("No trips found.\n");
 		}
 		
+	}
+	
+	public static ArrayList<Trip> sortTripsById(ArrayList<Trip> matchingTrips)
+	{
+		ArrayList<Trip> newMatchingTrips = new ArrayList<Trip>();
+		int[] tripIds = new int[matchingTrips.size()];
+		int index = 0;
+		for(Trip trip : matchingTrips)
+		{
+			tripIds[index]=trip.tripId;
+			index++;
+		}
+		Arrays.sort(tripIds);
+		for(int i = 0; i < tripIds.length; i++)
+		{
+			newMatchingTrips.add(data.getTripWithTripId(tripIds[i]));
+		}
+		return newMatchingTrips;
 	}
 }

@@ -285,4 +285,15 @@ public class SystemData {
 		}
 		
 	}	
+	public Trip getTripWithTripId(int tripId)
+	{
+		for(Trip trip:trips)
+		{
+			if(trip.tripId == tripId)
+			{
+				return trip;
+			}
+		}
+		return null;
+	}
 }
