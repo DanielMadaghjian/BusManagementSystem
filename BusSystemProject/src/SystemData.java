@@ -13,6 +13,7 @@ public class SystemData {
 	
 	public ArrayList<Stop> stops;
 	public ArrayList<Stop> stopsTST;
+	public ArrayList<Trip> trips;
 	public ArrayList<ArrayList<DirectedEdge>> edges;
 	
 	public SystemData(String filename1, String filename2, String filename3)
@@ -25,6 +26,8 @@ public class SystemData {
 		initialiseStops();
 		initialiseStopsTST();
 		V = stops.size();
+		trips = new ArrayList<Trip>();
+		initialiseTrips();
 		edges = new ArrayList<>(stops.size());
 		for (int i = 0; i < stops.size(); i++) {
             edges.add(new ArrayList<>());
@@ -84,6 +87,46 @@ public class SystemData {
 					stopsTST.add(new Stop(stopId, stopName, stopDesc));					
 					line = br.readLine();
 				}	
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+	
+	public void initialiseTrips()
+	{
+		BufferedReader br;
+		
+		try {
+			br = new BufferedReader(new FileReader(stopTimesFile));
+			try {
+				String line = br.readLine();
+				line = br.readLine();	
+				String arrivalTime;
+				int tripId;
+				int stopId;
+				String stopName;
+				int index = 0;
+				while(line!= null)
+				{
+					tripId = Integer.parseInt(line.split(",")[0]);
+					arrivalTime = line.split(",")[1];
+					stopId = Integer.parseInt(line.split(",")[3]);
+					Stop tripStop = getStopFromId(stopId);
+					stopName = tripStop.stopName;
+					
+					if(checkValidArrivalTime(arrivalTime))
+					{
+						trips.add(new Trip(arrivalTime, tripId, stopId, stopName));					
+  				    }
+					index++;
+					line = br.readLine();
+				}
 				br.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -196,6 +239,50 @@ public class SystemData {
 		}
 		return -1;
 	}
-
 	
+	public Stop getStopFromId(int stopId)
+	{
+		for(Stop stop: stopsTST)
+		{
+			if(stop.stopId == stopId)
+			{
+				return stop;
+			}
+		}
+		return null;
+	}
+	
+	public boolean checkValidArrivalTime(String arrivalTime)
+	{
+		String time = arrivalTime;
+		if(arrivalTime.charAt(0)==' ')
+		{
+			time = time.substring(1);
+		}
+		int hour;
+		int minutes;
+		int seconds;
+		if(time.charAt(1)==':')
+		{
+			hour = Integer.parseInt(time.split(":")[0]);
+			minutes = Integer.parseInt(time.split(":")[1]);
+			seconds = Integer.parseInt(time.split(":")[2]);
+			
+			if(hour >= 0 && hour <= 23
+					&& minutes >= 0 && minutes <= 59 && time.split(":")[1].length() == 2
+						&& seconds >= 0 && seconds <= 59 && time.split(":")[2].length() == 2)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+		
+	}	
 }

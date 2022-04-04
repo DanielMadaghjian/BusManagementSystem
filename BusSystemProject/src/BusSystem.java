@@ -8,7 +8,7 @@ public class BusSystem {
 	
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);	
-		System.out.println("Please wait while we gather bus stop information.....");		
+		System.out.println("Please wait while we gather bus stop information.....\n");		
 		data = new SystemData("stops.txt","transfers.txt", "stop_times.txt");
 		boolean finished = false;
 		System.out.println("WELCOME TO THE VANCOUVER BUS PLANNER \n");
@@ -64,30 +64,30 @@ public class BusSystem {
 													}
 													else
 													{
-														System.out.println("Invalid route");
+														System.out.println("Invalid route\n");
 													}
 													
 												}
 												else
 												{
-													System.out.println("Invalid stop Id");
+													System.out.println("Invalid stop Id\n");
 												}
 											}
 											else
 											{
-												System.out.println("Invalid stop Id");
+												System.out.println("Invalid stop Id\n");
 												input.next();
 											}
 										}																											
 									}
 									else
 									{
-										System.out.println("Invalid stop Id");
+										System.out.println("Invalid stop Id\n");
 									}									
 								} 
 								else
 								{
-									System.out.println("Invalid stop Id");
+									System.out.println("Invalid stop Id\n");
 									input.next();
 								}
 							}
@@ -110,9 +110,27 @@ public class BusSystem {
 									}
 									else
 									{
-										System.out.println("No stops found.");
+										System.out.println("No stops found.\n");
 									}
 						    } while(!correctStopName);
+							break;
+						case 3:
+							boolean validArrivalTime = false;
+							while(!validArrivalTime)
+							{
+								System.out.println("Please enter the trip arrival time in the format: HH:MM:SS");
+								String arrivalTime = input.next();
+								if(data.checkValidArrivalTime(arrivalTime))
+								{								
+									findTrips(arrivalTime);
+									validArrivalTime = true;
+								}
+								else if(!data.checkValidArrivalTime(arrivalTime))
+								{
+									System.out.println("Invalid arrival time.\n");
+									
+     							}
+							} 
 							break;
 						default:								
 					}					
@@ -124,7 +142,7 @@ public class BusSystem {
 			}
 			else
 			{
-				System.out.println("Invalid option");
+				System.out.println("Invalid option\n");
 			}			
 		} while(!finished);		
 		System.out.println("Thank you for using this service!");		
@@ -141,9 +159,9 @@ public class BusSystem {
 		double cost = 0;
 		double totalCost =0;
 		
-		System.out.println("The Route from stop " + stopFrom + " to stop " + stopTo + " is:");
+		System.out.println("The Route from stop " + stopFrom + " to stop " + stopTo + " is:\n");
 		firstStop = route.get(0);
-		System.out.println(firstStop.stopId + " ~ " + firstStop.stopName);
+		System.out.println(firstStop.stopId + " ~ " + firstStop.stopName + "\n");
         for (int i = 1; i < route.size(); i++) {
             secondStop = route.get(i);
             for(DirectedEdge edge: data.edges.get(data.getStopIndex(firstStop.stopId)))
@@ -154,7 +172,7 @@ public class BusSystem {
             		cost = stopsEdge.cost;
             	}
             }
-            System.out.println(secondStop.stopId + " ~ " + secondStop.stopName + " cost-> " + cost);
+            System.out.println(secondStop.stopId + " ~ " + secondStop.stopName + " cost-> " + cost + "\n");
             firstStop = secondStop;
             totalCost += cost;            
         }
@@ -171,5 +189,41 @@ public class BusSystem {
 				System.out.println(stop.stopName + " ~ " + stop.stopId + " ~ " + stop.stopDesc + "\n");
 			}			
 		}						
+	}
+	
+	public static void findTrips(String arrivalTime)
+	{
+		ArrayList<Trip> matchingTrips = new ArrayList<Trip>();
+		for(Trip trip: data.trips)
+		{
+			String tripArrivalTime = trip.arrivalTime;
+		
+			if(tripArrivalTime.charAt(0) == ' ')
+			{
+				tripArrivalTime = tripArrivalTime.substring(1);
+			}
+			if(arrivalTime.charAt(0) == ' ')
+			{
+				arrivalTime = arrivalTime.substring(1);
+			}
+			//System.out.println(tripArrivalTime + " ~ " + arrivalTime);
+			if(tripArrivalTime.equals(arrivalTime))
+			{
+				matchingTrips.add(new Trip(tripArrivalTime, trip.tripId, trip.stopId, trip.stopName));
+			}
+		}
+		if(!matchingTrips.isEmpty())
+		{
+			for(Trip trip: matchingTrips)
+			{
+				System.out.println(trip.arrivalTime + " ~ " + trip.tripId + " ~ " + trip.stopName + "\n" );
+			}
+			
+		}
+		else
+		{
+			System.out.println("No trips found.\n");
+		}
+		
 	}
 }
