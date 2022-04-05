@@ -22,6 +22,7 @@ public class TST {
     	}
     }
 
+//The following contains(), get(), put(), collect() and keysWithPrefix() methods are referenced from https://algs4.cs.princeton.edu/52trie/TST.java.html
     /**
      * Does this symbol table contain the given key?
      * @param key the key
@@ -217,6 +218,9 @@ public class TST {
         }
     }
     
+    /**
+     * Takes in listOfStops and checks whether they are all valid by calling the contains() method
+     */
     public boolean checkIfValidStop(Iterable<String> listOfStops)
     {
     	boolean valid = false;

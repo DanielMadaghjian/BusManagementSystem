@@ -22,6 +22,7 @@ class Stop {
 		this.stopId = stopId;
 		this.stopDesc = stopDesc;		
 	
+		//Checks whether any of the stopNames begins with wb, nb, sb, or eb and removes it from the start and appends to the end.
 		if(stopName.charAt(0)=='W' && stopName.charAt(1)=='B')
 		{
 			this.stopName = stopName.substring(3, stopName.length()-1) + " WB";

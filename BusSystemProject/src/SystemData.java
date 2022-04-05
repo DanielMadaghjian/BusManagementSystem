@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class SystemData {
-	public int V;
-	private String stopsFile;
+	public int V; //number of stops
+	private String stopsFile; 
 	private String transfersFile;
 	private String stopTimesFile;
 	
@@ -28,6 +28,7 @@ public class SystemData {
 		trips = new ArrayList<Trip>();
 		initialiseTrips();
 		edges = new ArrayList<>(stops.size());
+		//initialise edges arraylist
 		for (int i = 0; i < stops.size(); i++) {
             edges.add(new ArrayList<>());
         }
@@ -35,6 +36,9 @@ public class SystemData {
 		addEdgesFromStopTimes();
 	}
 	
+	/**
+     * Initializes all the stops from the file stops.txt, using BufferedReader into the Arraylist 'stops'.
+     */
 	public void initialiseStops()
 	{
 		BufferedReader br;
@@ -66,6 +70,9 @@ public class SystemData {
 		}		
 	}
 	
+	/**
+     * Initializes all the stops from the file stops.txt, using BufferedReader into the Arraylist 'stopsTST'.
+     */
 	public void initialiseStopsTST()
 	{
 		BufferedReader br;
@@ -97,6 +104,9 @@ public class SystemData {
 		}		
 	}
 	
+	/**
+     * Initializes all the trips from the file stop_times.txt, using BufferedReader into the Arraylist 'trips'.
+     */
 	public void initialiseTrips()
 	{
 		BufferedReader br;
@@ -118,7 +128,7 @@ public class SystemData {
 					stopId = Integer.parseInt(line.split(",")[3]);
 					Stop tripStop = getStopFromId(stopId);
 					stopName = tripStop.stopName;
-					
+					//if valid arrivalTime add to trips
 					if(checkValidArrivalTime(arrivalTime))
 					{
 						trips.add(new Trip(arrivalTime, tripId, stopId, stopName));					
@@ -137,6 +147,9 @@ public class SystemData {
 		}		
 	}
 	
+	/**
+     * Reads in file transfers.txt and adds edge from each row into the ArrayList of directedEdges 'edges'.
+     */
 	public void addEdgesFromTransfers()
 	{
 		BufferedReader br;
@@ -155,7 +168,7 @@ public class SystemData {
 					src = Integer.parseInt(line.split(",")[0]);
 					dest = Integer.parseInt(line.split(",")[1]);
 					transferType = Integer.parseInt(line.split(",")[2]);
-									
+					//calculating cost according to the specification		
 					if(transferType == 0)
 					{
 						cost = 2;
@@ -180,6 +193,9 @@ public class SystemData {
 		}		
 	}
 	
+	/**
+     * Reads in file stop_times.txt and adds edge if two stops are on the same trip into the ArrayList of directedEdges 'edges'.
+     */
 	public void addEdgesFromStopTimes()
 	{
 		BufferedReader br;
@@ -201,6 +217,7 @@ public class SystemData {
 				while(line!=null)
 				{
 					currentTripId = Integer.parseInt(line.split(",")[0]);
+					//add edge if on the same tripId
 					if(currentTripId == lastTripId)
 					{
 						currentStopId = Integer.parseInt(line.split(",")[3]);
@@ -227,6 +244,9 @@ public class SystemData {
 		}		
 	}
 	
+	/**
+     * Takes in the stopId and iterates through ArrayList 'stops' to return the index in 'stops' which corresponds to the stopId
+     */
 	public int getStopIndex(int stopId)
 	{		
 		for(Stop stop: stops)
@@ -239,6 +259,9 @@ public class SystemData {
 		return -1;
 	}
 	
+	/**
+     * Takes in the stopId and iterates through ArrayList 'stopsTST' to return the Stop which corresponds to the stopId
+     */
 	public Stop getStopFromId(int stopId)
 	{
 		for(Stop stop: stopsTST)
@@ -251,6 +274,9 @@ public class SystemData {
 		return null;
 	}
 	
+	/**
+     * Used for analysing the trip arrival time. Checks whether it is in the format HH:MM:SS
+     */
 	public boolean checkValidArrivalTime(String arrivalTime)
 	{
 		String time = arrivalTime;
@@ -266,7 +292,7 @@ public class SystemData {
 			hour = Integer.parseInt(time.split(":")[0]);
 			minutes = Integer.parseInt(time.split(":")[1]);
 			seconds = Integer.parseInt(time.split(":")[2]);
-			
+			//Checks whether hour does not succeed 23, minutes does not succeed 59 and seconds does not succeed 59. Also checks minutes and seconds contains 2 digits
 			if(hour >= 0 && hour <= 23
 					&& minutes >= 0 && minutes <= 59 && time.split(":")[1].length() == 2
 						&& seconds >= 0 && seconds <= 59 && time.split(":")[2].length() == 2)
@@ -284,6 +310,10 @@ public class SystemData {
 		}
 		
 	}	
+	
+	/**
+     * Takes in a tripId and iterates through ArrayList 'trips' to return the Trip which corresponds to the tripId
+     */
 	public Trip getTripWithTripId(int tripId)
 	{
 		for(Trip trip:trips)

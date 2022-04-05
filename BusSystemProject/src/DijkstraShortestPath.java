@@ -1,6 +1,4 @@
-
 import java.util.ArrayList;
-
 
 public class DijkstraShortestPath {
 	private int stopFrom;
@@ -20,12 +18,20 @@ public class DijkstraShortestPath {
 		findShortestPaths(stopFrom, stopTo);		
 	}
 	
+	/**
+     * Takes in the source stop and the destination stop. 
+     * Finds all the shortest distances and stores in array 'dist'
+     */
 	public void findShortestPaths(int src, int dest)
 	{
+		//shortest distances
 	    dist = new double[data.V];
+	    //checks whether stops were checked
 	    visited = new boolean[data.V];
+	    //records all the stops taken to the destination
 	    prev = new int[data.V];
 	    prev[data.getStopIndex(src)] = -1;
+	    //initialise dist and visited
 	    for (int i = 0; i < dist.length; i++) {
 	        dist[i] = Double.POSITIVE_INFINITY;
 	        visited[i] = false;
@@ -37,6 +43,7 @@ public class DijkstraShortestPath {
 		    if (vertex >= 0)
 		    {
 			    visited[vertex] = true;
+			    //relax method
 			    for (DirectedEdge edge : data.edges.get(vertex))
 			    {
 			           int srcVert = data.getStopIndex(edge.src);
@@ -49,12 +56,14 @@ public class DijkstraShortestPath {
 			           }
 			    }
 		    }
-	    }          
+	    }       
+	    //get the route from source to destination stop
 	    shortestRoute = findShortestRoute(prev, data.getStopIndex(dest));
 	}
 
-	    
-	 // Referenced from www.geeksforgeeks.org
+	/**
+     * Referenced from www.geeksforgeeks.org
+     */
 	public int minimumDistance(double[] distTo, boolean[] visited) {
 	    double min = Double.MAX_VALUE;
 	    int index = -1;
@@ -66,8 +75,10 @@ public class DijkstraShortestPath {
 	    }
 	    return index;
 	}
-	      
-	    //referenced from techiedelight.com
+	   
+	/**
+     * Referenced from techiedelight.com
+     */	    
 	public ArrayList<Stop> findShortestRoute(int[] prev, int lastStop)
 	{   	
 	    if(prev[lastStop] >= 0)
