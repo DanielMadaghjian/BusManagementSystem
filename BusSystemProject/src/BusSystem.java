@@ -17,7 +17,7 @@ public class BusSystem {
 		do
 		{
 			System.out.println("Please choose an option to proceed or type 'exit' to leave: ");
-			System.out.println("1. Find Shortest Route\n2. Search for bus stop\n3. Search for trip(s) by arrival time");
+			System.out.println("1. Plan your Journey\n2. Search for bus stop\n3. Search for trip(s) by arrival time");
 			//Check choice
 			if(input.hasNextInt())
 			{
@@ -107,8 +107,16 @@ public class BusSystem {
 								String arrivalTime = input.next();
 								if(data.checkValidArrivalTime(arrivalTime))
 								{								
-									findTrips(arrivalTime);
-									validArrivalTime = true;
+									ArrayList<Trip> matchingTrips = findMatchingTrips(arrivalTime);
+									if(matchingTrips != null)
+									{
+										validArrivalTime = true;
+										printTrips(matchingTrips);
+									}
+									else
+									{
+										System.out.println("No trips found. \n");
+									}
 								}
 								else if(!data.checkValidArrivalTime(arrivalTime))
 								{
@@ -143,10 +151,12 @@ public class BusSystem {
 		DirectedEdge stopsEdge;
 		double cost = 0;
 		double totalCost =0;
-		
+		int stopSequence= 1;
+		int count = 1;
 		System.out.println("The Route from stop " + stopFrom + " to stop " + stopTo + " is:\n");
 		firstStop = route.get(0);
-		System.out.println(firstStop.stopId + " ~ " + firstStop.stopName + "\n");
+		System.out.println(stopSequence + ") " + firstStop.stopId + " ~ " + firstStop.stopName + " ~ Cost -> 0\n");
+		stopSequence++;
         for (int i = 1; i < route.size(); i++) {
             secondStop = route.get(i);
             for(DirectedEdge edge: data.edges.get(data.getStopIndex(firstStop.stopId)))
@@ -157,26 +167,32 @@ public class BusSystem {
             		cost = stopsEdge.cost;
             	}
             }
-            System.out.println(secondStop.stopId + " ~ " + secondStop.stopName + " cost-> " + cost + "\n");
+            System.out.println(stopSequence + ") " + secondStop.stopId + " ~ " + secondStop.stopName + " ~ Cost -> " + cost + "\n");
             firstStop = secondStop;
-            totalCost += cost;            
+            totalCost += cost;     
+            stopSequence++;
+            count++;
         }
-        System.out.println("The total cost of this trip is: " + totalCost + "\n");			
+        System.out.println("The total cost of this trip is: " + totalCost);	
+        System.out.println("The number of stops during the journey is: " + count + "\n");
 	}
 	
 	public static void findStopsUsingTST(SystemData data, TST tree, Iterable<String> listOfStops)
 	{
 		if(tree.checkIfValidStop(listOfStops))
 		{
+			int count = 0;
 			for(String key: listOfStops)
 			{
 				Stop stop = tree.get(key);
-				System.out.println(stop.stopName + " ~ " + stop.stopId + " ~ " + stop.stopDesc + "\n");
-			}			
+				System.out.println(" " + stop.stopId + " ~ " + stop.stopDesc + "\n");
+				count++;
+			}	
+			System.out.println("Total results found: " + count + "\n");
 		}						
 	}
 	
-	public static void findTrips(String arrivalTime)
+	public static ArrayList<Trip> findMatchingTrips(String arrivalTime)
 	{
 		ArrayList<Trip> matchingTrips = new ArrayList<Trip>();
 		for(Trip trip: data.trips)
@@ -191,24 +207,36 @@ public class BusSystem {
 			{
 				arrivalTime = arrivalTime.substring(1);
 			}
-			//System.out.println(tripArrivalTime + " ~ " + arrivalTime);
+			
 			if(tripArrivalTime.equals(arrivalTime))
 			{
 				matchingTrips.add(new Trip(tripArrivalTime, trip.tripId, trip.stopId, trip.stopName));
 			}
 		}
-		if(!matchingTrips.isEmpty())
+		if(matchingTrips.isEmpty())
 		{
-			matchingTrips = sortTripsById(matchingTrips);
-			for(Trip trip: matchingTrips)
-			{
-				System.out.println(trip.arrivalTime + " ~ " + trip.tripId + " ~ " + trip.stopName + "\n" );
-			}
-			
+			return null;
 		}
 		else
 		{
-			System.out.println("No trips found.\n");
+			return matchingTrips;
+		}
+	}
+	
+	public static void printTrips(ArrayList<Trip> matchingTrips)
+	{
+		if(!matchingTrips.isEmpty())
+		{
+				matchingTrips = sortTripsById(matchingTrips);
+				int tripSequence = 1;
+				int count = 0;
+				for(Trip trip: matchingTrips)
+				{
+					System.out.println(tripSequence + ") " + trip.arrivalTime + " ~ " + trip.tripId + " ~ " + trip.stopName + "\n" );
+					tripSequence++;
+					count++;
+				}
+				System.out.println("The total trips found is: " + count + "\n");			
 		}
 		
 	}
