@@ -10,14 +10,14 @@ public class BusSystem {
 	
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);	
+		System.out.println("WELCOME TO THE VANCOUVER BUS PLANNER \n");
 		System.out.println("Please wait while we gather bus stop information.....\n");		
 		data = new SystemData("stops.txt","transfers.txt", "stop_times.txt");
 		boolean finished = false;
-		System.out.println("WELCOME TO THE VANCOUVER BUS PLANNER \n");
 		do
 		{
 			System.out.println("Please choose an option to proceed or type 'exit' to leave: ");
-			System.out.println("1. Plan your Journey\n2. Search for bus stop\n3. Search for trip(s) by arrival time");
+			System.out.println("1. Plan your Journey\n2. Search for bus stop by full name or partially\n3. Search for trip(s) by arrival time");
 			//Check choice
 			if(input.hasNextInt())
 			{
@@ -26,6 +26,7 @@ public class BusSystem {
 				{
 					switch(choice)
 					{
+					//shortest path
 						case 1:
 							System.out.println("Please enter stop id: ");
 							boolean correctFromId = false;
@@ -77,6 +78,7 @@ public class BusSystem {
 								}
 							}
 							break;
+						//TST
 						case 2:
 							
 							boolean correctStopName = false;
@@ -84,30 +86,33 @@ public class BusSystem {
 							{
 								System.out.println("Please enter the bus stop name, or by the first few characters: ");
 
-									String stopName = input.next();	
-									tree = new TST(data);
-									Iterable<String> listOfStops = tree.keysWithPrefix(stopName.toUpperCase());
-									findStopsUsingTST(data, tree, listOfStops);
-									
-									if(tree.checkIfValidStop(listOfStops))
-									{
-										correctStopName = true;
-									}
-									else
-									{
-										System.out.println("No stops found.\n");
-									}
+								String stopName = input.next();	
+								tree = new TST(data);
+								Iterable<String> listOfStops = tree.keysWithPrefix(stopName.toUpperCase());
+								findStopsUsingTST(data, tree, listOfStops);		
+								//Checks whether valid stop
+								if(tree.checkIfValidStop(listOfStops))
+								{
+									correctStopName = true;
+								}
+								else
+								{
+									System.out.println("No stops found.\n");
+								}
 						    } while(!correctStopName);
 							break;
+						//Arrival Time
 						case 3:
 							boolean validArrivalTime = false;
 							while(!validArrivalTime)
 							{
 								System.out.println("Please enter the trip arrival time in the format: HH:MM:SS");
 								String arrivalTime = input.next();
+								//checks whether valid format
 								if(data.checkValidArrivalTime(arrivalTime))
 								{								
 									ArrayList<Trip> matchingTrips = findMatchingTrips(arrivalTime);
+									//checks whether arrival time is found
 									if(matchingTrips != null)
 									{
 										validArrivalTime = true;
@@ -128,7 +133,13 @@ public class BusSystem {
 						default:								
 					}					
 				}
+				else
+				{
+					System.out.println("Invalid option.\n");
+					input.next();
+				}
 			}
+			//if user enters exit, then terminate program
 			else if(input.hasNext("exit"))
 			{
 				finished = true;
@@ -136,11 +147,15 @@ public class BusSystem {
 			else
 			{
 				System.out.println("Invalid option\n");
+				input.next();
 			}			
 		} while(!finished);		
 		System.out.println("Thank you for using this service!");		
 	}
 	
+	/**
+     * Finds shortestRoute and prints it out in sequence
+     */
 	public static void findShortestPath(SystemData data, int stopFrom, int stopTo)
 	{		
 		shortestPath = new DijkstraShortestPath(data, stopFrom, stopTo);
@@ -152,11 +167,10 @@ public class BusSystem {
 		double cost = 0;
 		double totalCost =0;
 		int stopSequence= 1;
-		int count = 1;
+		int count = 0;
 		System.out.println("The Route from stop " + stopFrom + " to stop " + stopTo + " is:\n");
 		firstStop = route.get(0);
-		System.out.println(stopSequence + ") " + firstStop.stopId + " ~ " + firstStop.stopName + " ~ Cost -> 0\n");
-		stopSequence++;
+		System.out.println("   " + firstStop.stopId + " ~ " + firstStop.stopName + " ~ Cost -> 0\n");
         for (int i = 1; i < route.size(); i++) {
             secondStop = route.get(i);
             for(DirectedEdge edge: data.edges.get(data.getStopIndex(firstStop.stopId)))
@@ -177,6 +191,9 @@ public class BusSystem {
         System.out.println("The number of stops during the journey is: " + count + "\n");
 	}
 	
+	/**
+     * Prints out the stops that match the input (even if a few characters are entered)
+     */
 	public static void findStopsUsingTST(SystemData data, TST tree, Iterable<String> listOfStops)
 	{
 		if(tree.checkIfValidStop(listOfStops))
@@ -192,22 +209,28 @@ public class BusSystem {
 		}						
 	}
 	
+	/**
+     * Iterates through ArrayList trips, and adds any trip which corresponds to the users ArrivalTime, to a new arraylist of Trips which is returned.
+     */
 	public static ArrayList<Trip> findMatchingTrips(String arrivalTime)
 	{
 		ArrayList<Trip> matchingTrips = new ArrayList<Trip>();
 		for(Trip trip: data.trips)
 		{
 			String tripArrivalTime = trip.arrivalTime;
-		
+			//Checks whether first letter is a space -> Example: _1:45:23
 			if(tripArrivalTime.charAt(0) == ' ')
 			{
+				//modifies arrival time to not include space
 				tripArrivalTime = tripArrivalTime.substring(1);
 			}
+			//Checks whether first letter is a space -> Example: _1:45:23
 			if(arrivalTime.charAt(0) == ' ')
 			{
+				//modifies arrival time to not include space
 				arrivalTime = arrivalTime.substring(1);
 			}
-			
+			//if same arrivalTimes, add to matchingTrips
 			if(tripArrivalTime.equals(arrivalTime))
 			{
 				matchingTrips.add(new Trip(tripArrivalTime, trip.tripId, trip.stopId, trip.stopName));
@@ -223,6 +246,9 @@ public class BusSystem {
 		}
 	}
 	
+	/**
+     * Takes in arraylist of trips which match users input, and prints it out
+     */
 	public static void printTrips(ArrayList<Trip> matchingTrips)
 	{
 		if(!matchingTrips.isEmpty())
@@ -241,6 +267,9 @@ public class BusSystem {
 		
 	}
 	
+	/**
+     * Iterates through ArrayList matchingTrips, and 
+     */
 	public static ArrayList<Trip> sortTripsById(ArrayList<Trip> matchingTrips)
 	{
 		ArrayList<Trip> newMatchingTrips = new ArrayList<Trip>();
