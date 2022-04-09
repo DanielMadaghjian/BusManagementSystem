@@ -82,24 +82,25 @@ public class BusSystem {
 						case 2:
 							
 							boolean correctStopName = false;
-							do
+							 while(!correctStopName)
 							{
 								System.out.println("Please enter the bus stop name, or by the first few characters: ");
 
 								String stopName = input.next();	
 								tree = new TST(data);
 								Iterable<String> listOfStops = tree.keysWithPrefix(stopName.toUpperCase());
-								findStopsUsingTST(data, tree, listOfStops);		
+									
 								//Checks whether valid stop
 								if(tree.checkIfValidStop(listOfStops))
 								{
+									findStopsUsingTST(data, tree, listOfStops);	
 									correctStopName = true;
 								}
 								else
 								{
 									System.out.println("No stops found.\n");
 								}
-						    } while(!correctStopName);
+						    }
 							break;
 						//Arrival Time
 						case 3:
@@ -136,7 +137,7 @@ public class BusSystem {
 				else
 				{
 					System.out.println("Invalid option.\n");
-					input.next();
+					//input.next();
 				}
 			}
 			//if user enters exit, then terminate program
@@ -215,27 +216,31 @@ public class BusSystem {
 	public static ArrayList<Trip> findMatchingTrips(String arrivalTime)
 	{
 		ArrayList<Trip> matchingTrips = new ArrayList<Trip>();
-		for(Trip trip: data.trips)
+		if(data.trips != null)
 		{
-			String tripArrivalTime = trip.arrivalTime;
-			//Checks whether first letter is a space -> Example: _1:45:23
-			if(tripArrivalTime.charAt(0) == ' ')
+			for(Trip trip: data.trips)
 			{
-				//modifies arrival time to not include space
-				tripArrivalTime = tripArrivalTime.substring(1);
-			}
-			//Checks whether first letter is a space -> Example: _1:45:23
-			if(arrivalTime.charAt(0) == ' ')
-			{
-				//modifies arrival time to not include space
-				arrivalTime = arrivalTime.substring(1);
-			}
-			//if same arrivalTimes, add to matchingTrips
-			if(tripArrivalTime.equals(arrivalTime))
-			{
-				matchingTrips.add(new Trip(tripArrivalTime, trip.tripId, trip.stopId, trip.stopName));
+				String tripArrivalTime = trip.arrivalTime;
+				//Checks whether first letter is a space -> Example: _1:45:23
+				if(tripArrivalTime.charAt(0) == ' ')
+				{
+					//modifies arrival time to not include space
+					tripArrivalTime = tripArrivalTime.substring(1);
+				}
+				//Checks whether first letter is a space -> Example: _1:45:23
+				if(arrivalTime.charAt(0) == ' ')
+				{
+					//modifies arrival time to not include space
+					arrivalTime = arrivalTime.substring(1);
+				}
+				//if same arrivalTimes, add to matchingTrips
+				if(tripArrivalTime.equals(arrivalTime))
+				{
+					matchingTrips.add(new Trip(tripArrivalTime, trip.tripId, trip.stopId, trip.stopName));
+				}
 			}
 		}
+		
 		if(matchingTrips.isEmpty())
 		{
 			return null;
@@ -258,7 +263,7 @@ public class BusSystem {
 				int count = 0;
 				for(Trip trip: matchingTrips)
 				{
-					System.out.println(tripSequence + ") " + trip.arrivalTime + " ~ " + trip.tripId + " ~ " + trip.stopName + "\n" );
+					System.out.println(tripSequence + ") " + trip.tripId + " ~ " + trip.stopName + "\n" );
 					tripSequence++;
 					count++;
 				}
@@ -273,18 +278,21 @@ public class BusSystem {
 	public static ArrayList<Trip> sortTripsById(ArrayList<Trip> matchingTrips)
 	{
 		ArrayList<Trip> newMatchingTrips = new ArrayList<Trip>();
-		int[] tripIds = new int[matchingTrips.size()];
-		int index = 0;
-		for(Trip trip : matchingTrips)
+		if(!matchingTrips.isEmpty())
 		{
-			tripIds[index]=trip.tripId;
-			index++;
-		}
-		Arrays.sort(tripIds);
-		for(int i = 0; i < tripIds.length; i++)
-		{
-			newMatchingTrips.add(data.getTripWithTripId(tripIds[i]));
-		}
+			int[] tripIds = new int[matchingTrips.size()];
+			int index = 0;
+			for(Trip trip : matchingTrips)
+			{
+				tripIds[index]=trip.tripId;
+				index++;
+			}
+			Arrays.sort(tripIds);
+			for(int i = 0; i < tripIds.length; i++)
+			{
+				newMatchingTrips.add(data.getTripWithTripId(tripIds[i]));
+			}
+		}	
 		return newMatchingTrips;
 	}
 }

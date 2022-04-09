@@ -248,14 +248,17 @@ public class SystemData {
      * Takes in the stopId and iterates through ArrayList 'stops' to return the index in 'stops' which corresponds to the stopId
      */
 	public int getStopIndex(int stopId)
-	{		
-		for(Stop stop: stops)
+	{	
+		if(!stops.isEmpty())
 		{
-			if(stop.stopId == stopId)
+			for(Stop stop: stops)
 			{
-				return stop.stopIndex;
+				if(stop.stopId == stopId)
+				{
+					return stop.stopIndex;
+				}
 			}
-		}
+		}		
 		return -1;
 	}
 	
@@ -264,13 +267,16 @@ public class SystemData {
      */
 	public Stop getStopFromId(int stopId)
 	{
-		for(Stop stop: stopsTST)
+		if(!stopsTST.isEmpty())
 		{
-			if(stop.stopId == stopId)
+			for(Stop stop: stopsTST)
 			{
-				return stop;
+				if(stop.stopId == stopId)
+				{
+					return stop;
+				}
 			}
-		}
+		}		
 		return null;
 	}
 	
@@ -279,36 +285,39 @@ public class SystemData {
      */
 	public boolean checkValidArrivalTime(String arrivalTime)
 	{
-		String time = arrivalTime;
-		if(arrivalTime.charAt(0)==' ')
+		if(arrivalTime.length() == 7 || arrivalTime.length() == 8)
 		{
-			time = time.substring(1);
-		}
-		int hour;
-		int minutes;
-		int seconds;
-		if(time.charAt(1)==':')
-		{
-			hour = Integer.parseInt(time.split(":")[0]);
-			minutes = Integer.parseInt(time.split(":")[1]);
-			seconds = Integer.parseInt(time.split(":")[2]);
-			//Checks whether hour does not succeed 23, minutes does not succeed 59 and seconds does not succeed 59. Also checks minutes and seconds contains 2 digits
-			if(hour >= 0 && hour <= 23
-					&& minutes >= 0 && minutes <= 59 && time.split(":")[1].length() == 2
-						&& seconds >= 0 && seconds <= 59 && time.split(":")[2].length() == 2)
+			String time = arrivalTime;
+			if(arrivalTime.charAt(0)==' ')
 			{
-				return true;
+				time = time.substring(1);
+			}
+			int hour;
+			int minutes;
+			int seconds;
+			if(time.charAt(1)==':')
+			{
+				hour = Integer.parseInt(time.split(":")[0]);
+				minutes = Integer.parseInt(time.split(":")[1]);
+				seconds = Integer.parseInt(time.split(":")[2]);
+				//Checks whether hour does not succeed 23, minutes does not succeed 59 and seconds does not succeed 59. Also checks minutes and seconds contains 2 digits
+				if(hour >= 0 && hour <= 23
+						&& minutes >= 0 && minutes <= 59 && time.split(":")[1].length() == 2
+							&& seconds >= 0 && seconds <= 59 && time.split(":")[2].length() == 2)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			else
 			{
 				return false;
 			}
 		}
-		else
-		{
-			return false;
-		}
-		
+		return false;		
 	}	
 	
 	/**
@@ -316,13 +325,16 @@ public class SystemData {
      */
 	public Trip getTripWithTripId(int tripId)
 	{
-		for(Trip trip:trips)
+		if(!trips.isEmpty())
 		{
-			if(trip.tripId == tripId)
+			for(Trip trip:trips)
 			{
-				return trip;
+				if(trip.tripId == tripId)
+				{
+					return trip;
+				}
 			}
-		}
+		}	
 		return null;
 	}
 }
