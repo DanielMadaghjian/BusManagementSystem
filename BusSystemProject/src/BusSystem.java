@@ -95,6 +95,7 @@ public class BusSystem {
 								{
 									findStopsUsingTST(data, tree, listOfStops);	
 									correctStopName = true;
+									//input.next();
 								}
 								else
 								{
@@ -137,7 +138,7 @@ public class BusSystem {
 				else
 				{
 					System.out.println("Invalid option.\n");
-					//input.next();
+					input.next();
 				}
 			}
 			//if user enters exit, then terminate program
